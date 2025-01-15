@@ -15,11 +15,11 @@ ib.reqMarketDataType(4)  # Use free, delayed, frozen data
 contract = Stock('AAPL', 'SMART', 'USD')
 bars = ib.reqHistoricalData(
     contract, endDateTime='', durationStr='30 D',
-    barSizeSetting='1 hour', whatToShow='MIDPOINT', useRTH=True)
+    barSizeSetting='1 hour', whatToShow='TRADES', useRTH=True)
 
 # convert to pandas dataframe (pandas needs to be installed):
 df = util.df(bars)
 print(df)
 
-# positions = ib.reqPositions()
-# print(positions)
+positions = ib.reqPositions()
+print(positions)
