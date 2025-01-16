@@ -2,15 +2,16 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 
-def load_and_prepare_data(file_path, sequence_length=10):
+def load_and_prepare_data(file_path, sequence_length=100):
     print(f"Loading data from {file_path}")
-    print(f"Using sequence length: {sequence_length}")
     # 读取数据
     df = pd.read_csv(file_path)
     
     # 使用收盘价作为特征
     data = df['close'].values
-    
+
+    print(f"Data shape: {data.shape}")
+
     # 数据标准化
     mean = np.mean(data)
     std = np.std(data)
@@ -75,7 +76,7 @@ def predict_next_day(model, last_sequence, mean, std):
 def train_and_evaluate():
     # 设置参数
     sequence_length = 10
-    epochs = 50
+    epochs = 8
     batch_size = 32
     
     # 准备数据
@@ -84,6 +85,7 @@ def train_and_evaluate():
         sequence_length
     )
     
+    return
     # 创建和训练模型
     model = create_model(sequence_length)
     history = model.fit(
@@ -119,5 +121,6 @@ def train_and_evaluate():
     return model, history, y_pred, y_test_actual, next_day_price
 
 if __name__ == '__main__':
-    model, history, predictions, actual, tomorrow_price = train_and_evaluate()
-    print(f'\n最终预测结果：明天的预期收盘价是 ${tomorrow_price:.2f}') 
+    # model, history, predictions, actual, tomorrow_price = train_and_evaluate()
+    # print(f'\n最终预测结果：明天的预期收盘价是 ${tomorrow_price:.2f}') 
+    train_and_evaluate()
