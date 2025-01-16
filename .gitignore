@@ -6,3 +6,5 @@ ib_tws_demo/*
 
 # Uncomment below if you want to keep the data directory itself but ignore its contents
 #!data/.gitkeep 
+
+.venv/*
