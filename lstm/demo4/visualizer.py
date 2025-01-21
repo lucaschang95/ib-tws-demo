@@ -12,6 +12,7 @@ def visualize_time_series(time, data):
     """
     plt.figure(figsize=(20000, 6))  # 增加图表宽度
     plt.plot(time, data, linewidth=1)
+    plt.xlim(0, 300)
     plt.title('时间序列数据')
     plt.xlabel('时间')
     plt.ylabel('振幅')
@@ -27,7 +28,7 @@ def visualize_time_series(time, data):
 
 if __name__ == "__main__":
     # 生成数据
-    time, wave_data = generate_sine_wave(n_points=300, amplitude=10)
+    time, wave_data = generate_sine_wave(n_points=3000, amplitude=10)
     
     # 可视化
     visualize_time_series(time, wave_data) 

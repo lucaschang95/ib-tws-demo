@@ -1,15 +1,12 @@
 import numpy as np
 
-def generate_sine_wave(n_points, amplitude=10):
-    frequency = 0.1
-    time = np.arange(0, n_points, 0.1)
+def generate_sine_wave(n_points, amplitude, noise_scale=0.25):
+    frequency = 0.02
+    time = np.arange(n_points)
+    print("\nTime string generated, first 5 time points:", time[:5])
     sine_wave = amplitude * np.sin(2 * np.pi * frequency * time)
-    noise = np.random.normal(0, amplitude/4, len(time))
-    print(noise)
-    np.savetxt('noise.csv', noise, delimiter=',')
-    res = sine_wave + noise
-    np.savetxt('res.csv', res, delimiter=',')
-    return time, res
+    noise = np.random.normal(0, amplitude * noise_scale, len(time))
+    return time, sine_wave + noise
 
 def create_sequences(data, sequence_length):
     X, y = [], []
@@ -19,5 +16,10 @@ def create_sequences(data, sequence_length):
     return np.array(X), np.array(y)
 
 def prepare_data(X):
-    """Reshape input for LSTM [samples, time steps, features]"""
     return X.reshape((X.shape[0], X.shape[1], 1))
+
+def normalize_data(wave_data):
+    min_val = np.min(wave_data)
+    max_val = np.max(wave_data)
+    normalized_data = (wave_data - min_val) / (max_val - min_val)
+    return normalized_data

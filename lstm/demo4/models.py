@@ -6,11 +6,11 @@ def create_simple_model(input_shape):
     Args:
         input_shape: Tuple specifying the input shape (sequence_length, features)
     """
-    model = tf.keras.Sequential([
-        tf.keras.layers.LSTM(32, input_shape=input_shape, return_sequences=True),
-        tf.keras.layers.LSTM(16),
-        tf.keras.layers.Dense(8, activation='relu'),
-        tf.keras.layers.Dense(1)
-    ])
+    inputs = tf.keras.Input(shape=input_shape)
+    x = tf.keras.layers.LSTM(64, return_sequences=True)(inputs)
+    x = tf.keras.layers.Dense(8, activation='relu')(x)
+    outputs = tf.keras.layers.Dense(1)(x)
+    
+    model = tf.keras.Model(inputs=inputs, outputs=outputs)
     model.compile(optimizer='adam', loss='mse')
     return model
