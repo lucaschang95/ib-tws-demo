@@ -1,5 +1,4 @@
 import tensorflow as tf
-import os
 
 def get_callbacks():
     early_stopping = tf.keras.callbacks.EarlyStopping(
