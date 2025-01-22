@@ -12,3 +12,6 @@ ib_tws_demo/*
 # Ignore Python cache files
 __pycache__/
 *.py[cod]
+
+# Ignore log files
+*.log
