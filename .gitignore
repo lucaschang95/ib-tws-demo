@@ -1,0 +1,17 @@
+# Ignore all files in data directory
+data/*
+
+# Ignore all files in ib_tws_demo directory
+ib_tws_demo/*
+
+# Uncomment below if you want to keep the data directory itself but ignore its contents
+#!data/.gitkeep 
+
+.venv/*
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+
+# Ignore log files
+*.log
