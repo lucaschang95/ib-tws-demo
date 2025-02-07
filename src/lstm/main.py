@@ -1,6 +1,11 @@
-import json
-import logging
 import os
+import sys
+src_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # Get the src directory
+sys.path.append(src_dir)
+
+from utils.args import load_args
+from utils.logger import setup_logger
+from utils.config import load_config
 from data_generator import (
     prepare_data,
     generate_sine_wave,
@@ -8,24 +13,11 @@ from data_generator import (
     normalize_data,
     split_data,
 )
+from ib.client import IBClient
 from models import create_simple_model
 from train import train_models
 from evaluate import evaluate_models
-
-
-script_dir = os.path.dirname(os.path.abspath(__file__))
-log_file = os.path.join(script_dir, "app.log")
-# 清空日志文件
-with open(log_file, "w") as f:
-    f.write("")
-
-# 配置日志记录
-logging.basicConfig(
-    filename=log_file,
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-)
-
+from ib_async import IB
 
 def prepare_data_and_sequences(config):
     """准备数据和序列。"""
@@ -53,7 +45,6 @@ def prepare_data_and_sequences(config):
 
     return X_train, y_train, X_val, y_val, X_test, y_test
 
-
 def create_and_train_model(X_train, y_train, X_val, y_val, config):
     """创建并训练模型。"""
     simple_model = create_simple_model((config["input_length"], 1))
@@ -62,17 +53,17 @@ def create_and_train_model(X_train, y_train, X_val, y_val, config):
     )
     return simple_model, simple_history
 
-
 def main():
-    # Get the directory containing this script
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    config_path = os.path.join(script_dir, "config.json")
+    setup_logger(clear_log=True)
+    args = load_args()
+    config = load_config(__file__)
 
-    with open(config_path, "r") as f:
-        config = json.load(f)
-
-    logging.info("Starting LSTM demo...")
-
+    client = IBClient(
+        host=args.host,
+        port=args.port,
+        client_id=args.client_id
+    )
+    
     X_train, y_train, X_val, y_val, X_test, y_test = prepare_data_and_sequences(config)
     simple_model, simple_history = create_and_train_model(
         X_train, y_train, X_val, y_val, config
