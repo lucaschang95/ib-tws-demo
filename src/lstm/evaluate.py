@@ -1,6 +1,5 @@
 import logging
 import numpy as np
-from data_generator import generate_sine_wave
 import matplotlib.pyplot as plt
 
 # 添加以下代码（放在import之后，函数定义之前）

@@ -27,14 +27,13 @@ def get_callbacks():
 def train_models(simple_model, X_train, y_train, X_val, y_val, epochs=200):
     callbacks = get_callbacks()
     
-    print("Training simple model...")
     simple_history = simple_model.fit(
         X_train, y_train,
         epochs=epochs,
-        validation_data=(X_val, y_val), # 使用单独的验证集
+        validation_data=(X_val, y_val),
         callbacks=callbacks,
         shuffle=False,
-        verbose=1,  # Show progress bar and metrics
+        verbose=1,
     )
 
     return simple_history

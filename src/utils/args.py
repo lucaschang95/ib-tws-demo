@@ -10,6 +10,8 @@ def parse_args():
                         help='客户端 ID (默认: 1)')
     parser.add_argument('--paper-trading', action='store_true',
                         help='使用纸面交易模式')
+    parser.add_argument('--config', type=str, default='config.json',
+                        help='配置文件路径 (默认: config.json)')
     return parser.parse_args()
 
 
