@@ -1,3 +1,4 @@
+import os
 from models.lstm import create_model_with_config, evaluate_models
 from utils.args import load_args
 from utils.logger import setup_logger
@@ -33,6 +34,12 @@ async def main():
         train_data=(X_train, y_train),
         val_data=(X_val, y_val)
     )
+
+    models_dir = os.path.join(os.getcwd(), 'models')
+    os.makedirs(models_dir, exist_ok=True)
+    model_path = os.path.join(models_dir, 'lstm_model.keras')
+    simple_model.save(model_path)
+    print(f"\n模型已保存到: {model_path}")
 
     # 只在有训练历史时进行评估（即新训练的模型）
     if simple_history is not None:
