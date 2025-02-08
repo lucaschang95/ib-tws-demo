@@ -19,3 +19,7 @@ pip freeze > requirements.txt
 
 ### 退出虚拟环境
 deactivate
+
+## 文档
+- [性能追踪](docs/PERFORMANCE.md) - 模型性能改进记录
+- [Roadmap](docs/ROADMAP.md) - 项目规划和优先级
