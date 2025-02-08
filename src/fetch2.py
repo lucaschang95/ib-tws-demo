@@ -24,6 +24,7 @@ def get_historical_data(ib, contract, filename='aapl_bars5.csv', num_batches=3):
         if bars and len(bars) > 0:
             # Use the earliest timestamp from current batch as next end time
             end_date = bars[0].date.strftime('%Y%m%d %H:%M:%S')
+            print(end_date)
         
         # Sleep briefly to avoid overwhelming the server
         ib.sleep(5)
@@ -42,4 +43,4 @@ def get_historical_data(ib, contract, filename='aapl_bars5.csv', num_batches=3):
     
     return bars
 
-# get_historical_data(ib, contract)
+get_historical_data(ib, contract)
