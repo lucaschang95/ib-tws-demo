@@ -20,13 +20,30 @@ def remove_outliers(df, column, n_sigmas=3):
     std = df[column].std()
     return df[abs(df[column] - mean) <= n_sigmas * std]
 
-def normalize_data(df):
-    columns = ['close']
+def normalize_data(df, config):
+    """
+    标准化数据并保存缩放参数
+    """
+    columns = ['close', 'volume']
     df_norm = df.copy()
-    df_norm[columns] = (df[columns] - df[columns].mean()) / df[columns].std()
-    # 对成交量进行对数标准化，因为成交量通常呈现右偏分布
-    df_norm['volume'] = np.log1p(df['volume'])  # log1p避免log(0)的问题
-    df_norm['volume'] = (df_norm['volume'] - df_norm['volume'].mean()) / df_norm['volume'].std()
+    
+    # 计算并保存缩放参数
+    close_mean = df['close'].mean()
+    close_std = df['close'].std()
+    config['close_mean'] = close_mean
+    config['close_std'] = close_std
+    
+    # 标准化收盘价
+    df_norm['close'] = (df['close'] - close_mean) / close_std
+    
+    # 对成交量进行对数标准化
+    df_norm['volume'] = np.log1p(df['volume'])
+    volume_mean = df_norm['volume'].mean()
+    volume_std = df_norm['volume'].std()
+    config['volume_mean'] = volume_mean
+    config['volume_std'] = volume_std
+    df_norm['volume'] = (df_norm['volume'] - volume_mean) / volume_std
+    
     return df_norm
 
 def split(df, train_ratio=0.7, val_ratio=0.2):
@@ -87,7 +104,7 @@ def prepare_data(X):
     return X
 
 def preprocess(df, config):
-    df = normalize_data(df)
+    df = normalize_data(df, config)
     # 划分数据集
     train_data, val_data, test_data = split(df)
 

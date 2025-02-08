@@ -2,6 +2,7 @@
   "input_length": 100,
   "amplitude": 300,
   "n_points": 3000,
-  "epochs": 5000,
-  "validation_split": 0.2
+  "epochs": 10,
+  "validation_split": 0.2,
+  "lstm_model_save_path": ".models/lstm_model.keras"
 }
