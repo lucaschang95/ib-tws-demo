@@ -1,6 +1,6 @@
+from datetime import datetime
 from ib_async import IB, Contract, util
 import logging
-import pandas as pd
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -49,19 +49,34 @@ class IBClient:
             logger.error(f"Error getting historical data: {str(e)}")
             return None
 
-    def get_real_historical_data(self, contract, num_batches=20, filename='aapl_bars13.csv'):
-        end_date = '20240604 09:30:00'  # Start with current time
+    def get_real_historical_data(self, contract, start_date, end_date):
         temp_bars = []  # Temporary list to store batches
+
+        # Calculate number of days between start and end date
+        start_dt = datetime.strptime(start_date, '%Y-%m-%d').replace(tzinfo=None)
+        end_dt = datetime.strptime(end_date, '%Y-%m-%d').replace(tzinfo=None)
+        delta = end_dt - start_dt
+        total_days = delta.days
+
+        # Each batch requests 5 days of data, calculate number of batches needed
+        num_batches = (total_days + 4) // 5  # Round up division to ensure full coverage
+        
+        # Convert end_date to IB format (yyyyMMdd HH:mm:ss)
+        end_date = end_dt.strftime('%Y%m%d %H:%M:%S')
 
         for i in range(num_batches):  # Get multiple sets of data
             print(f'Requesting historical data batch {i+1}...')
             bars = self.ib.reqHistoricalData(
-                contract, endDateTime=end_date, durationStr='3 D',
+                contract, endDateTime=end_date, durationStr='5 D',
                 barSizeSetting='1 min', whatToShow='TRADES', useRTH=True)
             logger.info(f'Batch {i+1} received.')
             
             # Add the new bars to our temporary list
             temp_bars.append(bars)
+
+            # Check if we've gone past the start date
+            if bars and len(bars) > 0 and bars[0].date.replace(tzinfo=None) < start_dt:
+                break
             
             # Update end_date to get next batch of historical data
             if bars and len(bars) > 0:
@@ -73,16 +88,13 @@ class IBClient:
             self.ib.sleep(5)
 
         # Reverse the order and combine all bars
-        all_bars = []
+        bars = []
         for batch in reversed(temp_bars):
-            all_bars.extend(batch)
+            bars.extend(batch)
 
-        # Convert all collected bars to a single dataframe
-        bars = all_bars
-
-        # Save to csv file
-        df2 = util.df(bars)  # Convert to dataframe
-        df2.to_csv(filename)
+        # # Save to csv file
+        # df2 = util.df(bars)  # Convert to dataframe
+        # df2.to_csv(filename)
         
         return bars
     

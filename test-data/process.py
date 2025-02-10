@@ -1,21 +1,32 @@
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'src'))
+
 import pandas as pd
 from typing import List
-import os
 from utils.holidays import get_market_holidays
 
-def merge_csv_files(file_paths: List[str], output_path: str = 'merged_data.csv') -> pd.DataFrame:
-    """
-    合并多个 CSV 文件，去除重复数据并按时间排序
-    
-    Args:
-        file_paths: CSV 文件路径列表
-        output_path: 输出文件路径
-        
-    Returns:
-        合并后的 DataFrame
-    """
-    # 存储所有数据框的列表
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'src'))
+
+from utils.args import load_args
+from utils.logger import setup_logger
+from utils.config import load_config
+from ib.client import IBClient
+from utils.preprocess import preprocess
+from models.lstm import create_model_with_config
+from ib_async import *
+from models.trainer import LSTMTrainer
+
+
+def merge_csv_files(existing_data: pd.DataFrame, file_paths: List[str], output_path: str = 'merged_data.csv') -> pd.DataFrame:
+    # 存储所有数据框的列表，首先添加现有数据
     dfs = []
+    if isinstance(existing_data, pd.DataFrame) and not existing_data.empty:
+        dfs.append(existing_data)
+    elif isinstance(existing_data, list) and existing_data:
+        dfs.extend(existing_data)
     
     # 读取所有 CSV 文件
     for file_path in file_paths:
@@ -29,7 +40,7 @@ def merge_csv_files(file_paths: List[str], output_path: str = 'merged_data.csv')
             print(f"Warning: File {file_path} does not exist")
     
     if not dfs:
-        raise ValueError("No valid CSV files found")
+        raise ValueError("No valid data to merge")
     
     # 合并所有数据框
     merged_df = pd.concat(dfs, ignore_index=True)
@@ -46,27 +57,8 @@ def merge_csv_files(file_paths: List[str], output_path: str = 'merged_data.csv')
     
     # 重置索引并保存到文件（保存索引列）
     merged_df = merged_df.reset_index(drop=True)  # 确保索引从0开始
-    merged_df.to_csv(output_path, index=True)
     
     return merged_df
-
-# if __name__ == "__main__":
-#     # 示例使用
-#     csv_files = [
-#         'test-data/aapl_bars4.csv',
-#         'test-data/aapl_bars5.csv',
-#         'test-data/aapl_bars6.csv',
-#         'test-data/aapl_bars11.csv',
-#         'test-data/aapl_bars12.csv',
-#         'test-data/aapl_bars13.csv'
-#     ]
-    
-#     try:
-#         merged_data = merge_csv_files(csv_files, 'test-data/merged_aapl_bars.csv')
-#         print(f"Successfully merged {len(csv_files)} files")
-#         print(f"Total rows after merging and removing duplicates: {len(merged_data)}")
-#     except Exception as e:
-#         print(f"Error occurred: {str(e)}")
 
 def check_missing_data(data):
     """
@@ -89,6 +81,7 @@ def check_missing_data(data):
     years = range(unique_dates.min().year, unique_dates.max().year + 1)
     for year in years:
         all_holidays.extend(get_market_holidays(year))
+    print('all_holidays', all_holidays)
     
     # Convert unique_dates to set for faster lookup
     unique_dates_set = set(unique_dates.date)
@@ -109,14 +102,3 @@ def check_missing_data(data):
         print("\nNo missing trading days found in the date range")
     
     return missing_dates
-
-
-if __name__ == "__main__":
-    data = pd.read_csv('test-data/aapl_bars.csv')
-    if 'Unnamed: 0' in data.columns:
-        data = data.drop('Unnamed: 0', axis=1)
-    
-    # 检查缺失数据
-    missing_data = check_missing_data(data)
-    print(missing_data)
-
