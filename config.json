@@ -2,7 +2,15 @@
   "input_length": 100,
   "amplitude": 300,
   "n_points": 3000,
-  "epochs": 200,
-  "validation_split": 0.2,
-  "lstm_model_save_path": ".models/lstm_model.keras"
+  "epochs": 50,
+  "validation_split": 0.1,
+  "lstm_model_save_path": ".models/lstm_model.keras",
+  "batch_size": 64,
+  "learning_rate": 0.001,
+  "learning_rate_decay": 1e-6,
+  "early_stopping_patience": 20,
+  "early_stopping_min_delta": 1e-4,
+  "lr_factor": 0.5,
+  "lr_patience": 10,
+  "min_lr": 1e-6
 }

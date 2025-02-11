@@ -6,12 +6,11 @@ from utils.args import load_args
 from utils.logger import setup_logger
 from utils.config import load_config
 from ib.client import IBClient
-import asyncio
 from utils.preprocess import preprocess
 from models.lstm import create_model_with_config
 from models.trainer import LSTMTrainer
 
-async def main():
+def main():
     setup_logger(clear_log=True)
     args = load_args()
 
@@ -77,4 +76,4 @@ async def main():
     print(f"测试集 - 预测值: {test_pred * std + mean:.2f}, 真实值: {test_batch[1][0] * std + mean:.2f}")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

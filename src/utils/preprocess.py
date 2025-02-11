@@ -47,14 +47,14 @@ def normalize_data(df, config):
     
     return df_norm
 
-def split(df, train_ratio=0.7, val_ratio=0.2):
+def split(df, train_ratio=0.8, val_ratio=0.1):
     """
     按时间顺序划分数据集为训练集、验证集和测试集
     
     Args:
         df: pandas DataFrame，原始数据
-        train_ratio: float，训练集比例
-        val_ratio: float，验证集比例
+        train_ratio: float，训练集比例，默认0.8
+        val_ratio: float，验证集比例，默认0.1
         
     Returns:
         train_df: pandas DataFrame，训练集
@@ -153,9 +153,9 @@ class TimeSeriesGenerator(tf.keras.utils.PyDataset):
 
         return X, y
 
-    def on_epoch_end(self):
-        """每个epoch结束时重新打乱数据"""
-        np.random.shuffle(self.indexes)
+    # def on_epoch_end(self):
+    #     """每个epoch结束时重新打乱数据"""
+    #     np.random.shuffle(self.indexes)
 
 def preprocess(df, config):
     df = normalize_data(df, config)
